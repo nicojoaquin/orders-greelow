@@ -12,7 +12,7 @@ const createTopping = async (
   try {
     const newData = req.body;
 
-    const newTopping = await toppingRepository.save(newData);
+    const newTopping: Topping = await toppingRepository.save(newData);
 
     return res.status(200).json({ ok: true, topping: newTopping });
   } catch (error) {
@@ -61,12 +61,7 @@ const updateToppingById = async (
 
     await toppingRepository.update(id, newData);
 
-    const updatedTopping = {
-      ...newData,
-      id,
-    };
-
-    return res.status(200).json({ ok: true, topping: updatedTopping });
+    return res.status(200).json({ ok: true, topping: { ...newData, id } });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -85,14 +80,9 @@ const deleteToppingById = async (
 
     await toppingRepository.remove(topping);
 
-    const deletedTopping = {
-      ...topping,
-      id,
-    };
-
     return res.status(200).json({
       ok: true,
-      topping: deletedTopping,
+      topping: { ...topping, id },
       msg: "Topping eliminado",
     });
   } catch (error) {

@@ -12,7 +12,7 @@ const createCategory = async (
   try {
     const newData = req.body;
 
-    const newCategory = await categoryRepository.save(newData);
+    const newCategory: Category = await categoryRepository.save(newData);
 
     return res.status(200).json({ ok: true, category: newCategory });
   } catch (error) {
@@ -25,7 +25,7 @@ const readCategories = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const categories = await categoryRepository.find();
+    const categories: Category[] = await categoryRepository.find();
 
     return res.status(200).json({ ok: true, categories });
   } catch (error) {
@@ -40,7 +40,7 @@ const readCategoryById = async (
   const { id } = req.params;
 
   try {
-    const category = await categoryRepository.findOneBy({ id });
+    const category: Category = await categoryRepository.findOneBy({ id });
 
     idValidation(category, "category");
 
@@ -58,18 +58,13 @@ const updateCategoryById = async (
   const newData = req.body;
 
   try {
-    const category = await categoryRepository.findOneBy({ id });
+    const category: Category = await categoryRepository.findOneBy({ id });
 
     idValidation(category, "category");
 
     await categoryRepository.update(id, newData);
 
-    const updatedCategory = {
-      ...newData,
-      id,
-    };
-
-    return res.status(200).json({ ok: true, category: updatedCategory });
+    return res.status(200).json({ ok: true, category: { ...newData, id } });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -82,20 +77,15 @@ const deleteCategoryById = async (
   const { id } = req.params;
 
   try {
-    const category = await categoryRepository.findOneBy({ id });
+    const category: Category = await categoryRepository.findOneBy({ id });
 
     idValidation(category, "category");
 
     await categoryRepository.remove(category);
 
-    const deletedCategory = {
-      ...category,
-      id,
-    };
-
     return res.status(200).json({
       ok: true,
-      category: deletedCategory,
+      category: { ...category, id },
       msg: "Categoría eliminada",
     });
   } catch (error) {

@@ -12,7 +12,7 @@ const createRestaurant = async (
   try {
     const newData = req.body;
 
-    const newRestaurant = await restaurantRepository.save(newData);
+    const newRestaurant: Restaurant = await restaurantRepository.save(newData);
 
     return res.status(200).json({ ok: true, restaurant: newRestaurant });
   } catch (error) {
@@ -64,12 +64,7 @@ const updateRestaurantById = async (
 
     await restaurantRepository.update(id, newData);
 
-    const updatedRestaurant = {
-      ...newData,
-      id,
-    };
-
-    return res.status(200).json({ ok: true, restaurant: updatedRestaurant });
+    return res.status(200).json({ ok: true, restaurant: { ...newData, id } });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -88,14 +83,9 @@ const deleteRestaurantById = async (
 
     await restaurantRepository.remove(restaurant);
 
-    const deletedRestaurant = {
-      ...restaurant,
-      id,
-    };
-
     return res.status(200).json({
       ok: true,
-      restaurant: deletedRestaurant,
+      restaurant: { ...restaurant, id },
       msg: "Restaurant eliminado",
     });
   } catch (error) {
