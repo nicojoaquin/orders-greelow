@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -14,9 +15,11 @@ export class Menu {
   id: string;
 
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.id)
+  @JoinColumn()
   restaurant: Restaurant;
 
   @ManyToOne(() => Category, (category) => category.id)
+  @JoinColumn()
   category: Category;
 
   @ManyToMany(() => Topping)
