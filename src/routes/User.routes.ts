@@ -1,15 +1,18 @@
 import { Router } from "express";
 import {
-  createUser,
+  registerUser,
   deleteUserById,
   readUsers,
   readUserById,
   updateUserById,
+  loginUser,
 } from "../controllers/User.controller";
 
 const router = Router();
 
-router.post("/create", createUser);
+router.post("/register", registerUser);
+
+router.post("/login", loginUser);
 
 router.get("/", readUsers);
 

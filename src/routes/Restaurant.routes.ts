@@ -6,8 +6,11 @@ import {
   readRestaurantById,
   updateRestaurantById,
 } from "../controllers/Restaurant.controller";
+import { revalidateToken } from "../middlewares/revalidateToken";
 
 const router = Router();
+
+router.use(revalidateToken);
 
 //Crea un restaurant nuevo
 router.post("/create", createRestaurant);
@@ -16,7 +19,7 @@ router.post("/create", createRestaurant);
 router.get("/", readRestaurants);
 
 //Obtiene un restaurant por id
-router.get("/:id", readRestaurantById);
+router.get("/one/:id", readRestaurantById);
 
 //Actualiza un restaurant por id
 router.put("/update/:id", updateRestaurantById);

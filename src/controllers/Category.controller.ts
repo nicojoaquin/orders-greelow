@@ -10,11 +10,15 @@ const createCategory = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const newData = req.body;
+    const newData: Category = req.body;
 
-    const newCategory: Category = await categoryRepository.save(newData);
+    const newCategory = await categoryRepository.save(newData);
 
-    return res.status(200).json({ ok: true, category: newCategory });
+    return res.status(200).json({
+      ok: true,
+      category: newCategory,
+      token: res.locals.user.newToken,
+    });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -25,9 +29,11 @@ const readCategories = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const categories: Category[] = await categoryRepository.find();
+    const categories = await categoryRepository.find();
 
-    return res.status(200).json({ ok: true, categories });
+    return res
+      .status(200)
+      .json({ ok: true, categories, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -40,11 +46,13 @@ const readCategoryById = async (
   const { id } = req.params;
 
   try {
-    const category: Category = await categoryRepository.findOneBy({ id });
+    const category = await categoryRepository.findOneBy({ id });
 
     idValidation(category, "category");
 
-    return res.status(200).json({ ok: true, category });
+    return res
+      .status(200)
+      .json({ ok: true, category, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -55,16 +63,20 @@ const updateCategoryById = async (
   res: Response
 ): Promise<Response> => {
   const { id } = req.params;
-  const newData = req.body;
+  const newData: Object = req.body;
 
   try {
-    const category: Category = await categoryRepository.findOneBy({ id });
+    const category = await categoryRepository.findOneBy({ id });
 
     idValidation(category, "category");
 
     await categoryRepository.update(id, newData);
 
-    return res.status(200).json({ ok: true, category: { ...newData, id } });
+    return res.status(200).json({
+      ok: true,
+      category: { ...newData, id },
+      token: res.locals.user.newToken,
+    });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -77,16 +89,19 @@ const deleteCategoryById = async (
   const { id } = req.params;
 
   try {
-    const category: Category = await categoryRepository.findOneBy({ id });
+    const category = await categoryRepository.findOneBy({ id });
 
     idValidation(category, "category");
 
-    await categoryRepository.remove(category);
+    await categoryRepository.remove(category).catch(() => {
+      throw "No se puede eliminar la categoría, esta asociada a un menu";
+    });
 
     return res.status(200).json({
       ok: true,
       category: { ...category, id },
       msg: "Categoría eliminada",
+      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });

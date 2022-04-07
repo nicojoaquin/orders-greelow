@@ -10,11 +10,13 @@ const createTopping = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const newData = req.body;
+    const newData: Topping = req.body;
 
-    const newTopping: Topping = await toppingRepository.save(newData);
+    const newTopping = await toppingRepository.save(newData);
 
-    return res.status(200).json({ ok: true, topping: newTopping });
+    return res
+      .status(200)
+      .json({ ok: true, topping: newTopping, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -24,7 +26,9 @@ const readToppings = async (req: Request, res: Response): Promise<Response> => {
   try {
     const topping = await toppingRepository.find();
 
-    return res.status(200).json({ ok: true, topping });
+    return res
+      .status(200)
+      .json({ ok: true, topping, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -41,7 +45,9 @@ const readToppingById = async (
 
     idValidation(topping, "restaurant");
 
-    return res.status(200).json({ ok: true, topping });
+    return res
+      .status(200)
+      .json({ ok: true, topping, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -52,7 +58,7 @@ const updateToppingById = async (
   res: Response
 ): Promise<Response> => {
   const { id } = req.params;
-  const newData = req.body;
+  const newData: Object = req.body;
 
   try {
     const topping = await toppingRepository.findOneBy({ id });
@@ -61,7 +67,11 @@ const updateToppingById = async (
 
     await toppingRepository.update(id, newData);
 
-    return res.status(200).json({ ok: true, topping: { ...newData, id } });
+    return res.status(200).json({
+      ok: true,
+      topping: { ...newData, id },
+      token: res.locals.user.newToken,
+    });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -84,6 +94,7 @@ const deleteToppingById = async (
       ok: true,
       topping: { ...topping, id },
       msg: "Topping eliminado",
+      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });

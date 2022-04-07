@@ -10,11 +10,15 @@ const createRestaurant = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const newData = req.body;
+    const newData: Restaurant = req.body;
 
-    const newRestaurant: Restaurant = await restaurantRepository.save(newData);
+    const newRestaurant = await restaurantRepository.save(newData);
 
-    return res.status(200).json({ ok: true, restaurant: newRestaurant });
+    return res.status(200).json({
+      ok: true,
+      restaurant: newRestaurant,
+      token: res.locals.user.newToken,
+    });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -27,7 +31,9 @@ const readRestaurants = async (
   try {
     const restaurants = await restaurantRepository.find();
 
-    return res.status(200).json({ ok: true, restaurants });
+    return res
+      .status(200)
+      .json({ ok: true, restaurants, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -44,7 +50,9 @@ const readRestaurantById = async (
 
     idValidation(restaurant, "restaurant");
 
-    return res.status(200).json({ ok: true, restaurant });
+    return res
+      .status(200)
+      .json({ ok: true, restaurant, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -55,7 +63,7 @@ const updateRestaurantById = async (
   res: Response
 ): Promise<Response> => {
   const { id } = req.params;
-  const newData = req.body;
+  const newData: Object = req.body;
 
   try {
     const restaurant = await restaurantRepository.findOneBy({ id });
@@ -64,7 +72,11 @@ const updateRestaurantById = async (
 
     await restaurantRepository.update(id, newData);
 
-    return res.status(200).json({ ok: true, restaurant: { ...newData, id } });
+    return res.status(200).json({
+      ok: true,
+      restaurant: { ...newData, id },
+      token: res.locals.user.newToken,
+    });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -81,12 +93,15 @@ const deleteRestaurantById = async (
 
     idValidation(restaurant, "restaurant");
 
-    await restaurantRepository.remove(restaurant);
+    await restaurantRepository.remove(restaurant).catch(() => {
+      throw "No se puede eliminar el restaurant, esta asociado a un menu";
+    });
 
     return res.status(200).json({
       ok: true,
       restaurant: { ...restaurant, id },
       msg: "Restaurant eliminado",
+      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });

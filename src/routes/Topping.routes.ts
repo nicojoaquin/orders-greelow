@@ -6,8 +6,11 @@ import {
   readToppingById,
   updateToppingById,
 } from "../controllers/Topping.controller";
+import { revalidateToken } from "../middlewares/revalidateToken";
 
 const router = Router();
+
+router.use(revalidateToken);
 
 //Crea un topping nuevo
 router.post("/create", createTopping);
@@ -16,7 +19,7 @@ router.post("/create", createTopping);
 router.get("/", readToppings);
 
 //Obtiene un topping por id
-router.get("/:id", readToppingById);
+router.get("/one/:id", readToppingById);
 
 //Actualiza un topping por id
 router.put("/update/:id", updateToppingById);

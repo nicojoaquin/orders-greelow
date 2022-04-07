@@ -6,8 +6,11 @@ import {
   readCategoryById,
   updateCategoryById,
 } from "../controllers/Category.controller";
+import { revalidateToken } from "../middlewares/revalidateToken";
 
 const router = Router();
+
+router.use(revalidateToken);
 
 //Crea una categoria nuevo
 router.post("/create", createCategory);
@@ -16,7 +19,7 @@ router.post("/create", createCategory);
 router.get("/", readCategories);
 
 //Obtiene una categoria por id
-router.get("/:id", readCategoryById);
+router.get("/one/:id", readCategoryById);
 
 //Actualiza una categoria por id
 router.put("/update/:id", updateCategoryById);

@@ -14,8 +14,8 @@ export class User {
   @Column()
   last_name: string;
 
-  @Column({ type: "timestamp" })
-  birth_date: Date;
+  @Column()
+  birth_date: String;
 
   @Column()
   password: string;

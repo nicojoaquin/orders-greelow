@@ -7,6 +7,7 @@ import restaurantRouter from "./Restaurant.routes";
 import userRouter from "./User.routes";
 import toppingRouter from "./Topping.routes";
 import menuRouter from "./Menu.routes";
+import itemROuter from "./Item.routes";
 
 // router.use("/", (req, res) => {
 //   res.send("Endpoints: \n/category \n/restaurant \n/user \n/topping");
@@ -16,5 +17,6 @@ router.use("/restaurant", restaurantRouter);
 router.use("/user", userRouter);
 router.use("/topping", toppingRouter);
 router.use("/menu", menuRouter);
+router.use("/item", itemROuter);
 
 export default router;

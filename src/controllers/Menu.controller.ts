@@ -7,17 +7,19 @@ const menuRepository = dbConfig.getRepository(Menu);
 
 const createMenu = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const newData = req.body;
+    const newData: Menu = req.body;
 
-    const newMenu: Menu = await menuRepository.save(newData);
+    const newMenu = await menuRepository.save(newData);
 
-    return res.status(200).json({ ok: true, menu: newMenu });
+    return res
+      .status(200)
+      .json({ ok: true, menu: newMenu, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
 };
 
-const readMenues = async (req: Request, res: Response): Promise<Response> => {
+const readMenus = async (req: Request, res: Response): Promise<Response> => {
   try {
     const menus = await menuRepository.find({
       relations: {
@@ -27,17 +29,21 @@ const readMenues = async (req: Request, res: Response): Promise<Response> => {
       },
     });
 
-    return res.status(200).json({ ok: true, menus });
+    return res
+      .status(200)
+      .json({ ok: true, menus, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
 };
 
 const readMenuById = async (req: Request, res: Response): Promise<Response> => {
+  const { id } = req.params;
+
   try {
     const menu = await menuRepository.findOne({
       where: {
-        id: req.params.id,
+        id,
       },
       relations: {
         toppings: true,
@@ -48,13 +54,15 @@ const readMenuById = async (req: Request, res: Response): Promise<Response> => {
 
     idValidation(menu, "menu");
 
-    return res.status(200).json({ ok: true, menu });
+    return res
+      .status(200)
+      .json({ ok: true, menu, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
 };
 
-const readMenuFilter = async (
+const readMenusFilter = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
@@ -62,6 +70,9 @@ const readMenuFilter = async (
 
   try {
     let menus;
+
+    if (!restaurantId || categoryId)
+      throw "No se envio ningun parametro de búsqueda";
 
     if (!categoryId) {
       menus = await menuRepository
@@ -102,7 +113,9 @@ const readMenuFilter = async (
         .getManyAndCount();
     }
 
-    return res.status(200).json({ ok: true, menus: menus[0] });
+    return res
+      .status(200)
+      .json({ ok: true, menus: menus[0], token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -113,7 +126,7 @@ const updateMenuById = async (
   res: Response
 ): Promise<Response> => {
   const { id } = req.params;
-  const newData = req.body;
+  const newData: Menu = req.body;
 
   try {
     const menu = await menuRepository.findOneBy({ id });
@@ -122,12 +135,11 @@ const updateMenuById = async (
 
     await menuRepository.update(id, newData);
 
-    const updatedMenu = {
-      ...newData,
-      id,
-    };
-
-    return res.status(200).json({ ok: true, menu: updatedMenu });
+    return res.status(200).json({
+      ok: true,
+      menu: { ...newData, id },
+      token: res.locals.user.newToken,
+    });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -137,8 +149,9 @@ const deleteToppings = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  const { id, toppingId } = req.params;
+
   try {
-    const { id, toppingId } = req.params;
     const menu = await menuRepository.findOne({
       where: {
         id,
@@ -148,50 +161,64 @@ const deleteToppings = async (
       },
     });
 
+    idValidation(menu, "menu");
+
+    //Validamos que el topping que queremos eliminar exista en el menu
     const menuTopping = menu.toppings.find((mt) => mt.id == toppingId);
 
-    if (!menuTopping) {
-      throw "El topping no se encuentra";
-    }
+    idValidation(menuTopping, "topping");
 
+    //Eliminamos el topping del menu seleccionado
     await menuRepository
       .createQueryBuilder("menu")
+      .select("*")
+      .where(id)
       .relation(Menu, "toppings")
-      .of(menu)
+      .of(menu.id)
       .remove(Number(toppingId));
 
-    return res.json({ menu: menu });
+    return res.json({ ok: true, menu, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
 };
 
 const addToppings = async (req: Request, res: Response): Promise<Response> => {
-  const { toppingId } = req.params;
+  const { id, toppingId } = req.params;
 
   try {
     const menu = await menuRepository.findOne({
       where: {
-        id: req.params.id,
+        id,
       },
       relations: {
         toppings: true,
       },
     });
 
+    idValidation(menu, "menu");
+
+    //Verificamos que el topping sea existente en la base de datos
+    const topping = await dbConfig
+      .getRepository(Topping)
+      .findOneBy({ id: toppingId });
+
+    idValidation(topping, "topping");
+
     const menuTopping = menu.toppings.find((mt) => mt.id == toppingId);
 
-    if (menuTopping) {
-      throw "El topping ya se encuentra";
-    }
+    //Verificamos que el topping que se quiera agregar no exista en el menu
+    if (menuTopping) throw "El topping ya se encuentra";
 
     await menuRepository
       .createQueryBuilder("menu")
       .relation(Menu, "toppings")
-      .of(menu)
+      .of(menu.id)
       .add(Number(toppingId));
 
-    return res.json({ menu: menu });
+    console.log(menu);
+
+    return res.json({ ok: true, menu, token: res.locals.user.newToken });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -214,6 +241,7 @@ const deleteMenuById = async (
       ok: true,
       menu: { ...menu, id },
       msg: "menu eliminado",
+      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });
@@ -222,9 +250,9 @@ const deleteMenuById = async (
 
 export {
   createMenu,
-  readMenues,
+  readMenus,
   readMenuById,
-  readMenuFilter,
+  readMenusFilter,
   updateMenuById,
   deleteToppings,
   addToppings,

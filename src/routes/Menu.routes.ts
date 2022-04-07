@@ -2,27 +2,30 @@ import { Router } from "express";
 import {
   createMenu,
   readMenuById,
-  readMenuFilter,
-  readMenues,
+  readMenusFilter,
+  readMenus,
   updateMenuById,
   deleteToppings,
   addToppings,
   deleteMenuById,
 } from "../controllers/Menu.controller";
+import { revalidateToken } from "../middlewares/revalidateToken";
 
 const router = Router();
+
+router.use(revalidateToken);
 
 //Crea un nuevo menu
 router.post("/create", createMenu);
 
 //Obtiene los menues
-router.get("/", readMenues);
+router.get("/", readMenus);
 
 //Obtiene un menu por su id
 router.get("/one/:id", readMenuById);
 
 //Obtiene menues dependiendo de los filtros(query params)
-router.get("/filter", readMenuFilter);
+router.get("/filter", readMenusFilter);
 
 //Actualiza un menu por su id
 router.put("/update/:id", updateMenuById);
