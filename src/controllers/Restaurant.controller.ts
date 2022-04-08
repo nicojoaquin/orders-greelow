@@ -17,7 +17,6 @@ const createRestaurant = async (
     return res.status(200).json({
       ok: true,
       restaurant: newRestaurant,
-      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });
@@ -31,9 +30,7 @@ const readRestaurants = async (
   try {
     const restaurants = await restaurantRepository.find();
 
-    return res
-      .status(200)
-      .json({ ok: true, restaurants, token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, restaurants });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -50,9 +47,7 @@ const readRestaurantById = async (
 
     idValidation(restaurant, "restaurant");
 
-    return res
-      .status(200)
-      .json({ ok: true, restaurant, token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, restaurant });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -75,7 +70,6 @@ const updateRestaurantById = async (
     return res.status(200).json({
       ok: true,
       restaurant: { ...newData, id },
-      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });
@@ -101,7 +95,6 @@ const deleteRestaurantById = async (
       ok: true,
       restaurant: { ...restaurant, id },
       msg: "Restaurant eliminado",
-      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });

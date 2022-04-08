@@ -17,7 +17,6 @@ const createCategory = async (
     return res.status(200).json({
       ok: true,
       category: newCategory,
-      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });
@@ -75,7 +74,6 @@ const updateCategoryById = async (
     return res.status(200).json({
       ok: true,
       category: { ...newData, id },
-      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });
@@ -101,7 +99,6 @@ const deleteCategoryById = async (
       ok: true,
       category: { ...category, id },
       msg: "Categoría eliminada",
-      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });

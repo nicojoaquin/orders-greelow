@@ -23,5 +23,5 @@ export class Order {
 
   @ManyToMany(() => Item)
   @JoinTable()
-  toppings: Item[];
+  items: Item[];
 }

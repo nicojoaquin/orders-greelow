@@ -14,9 +14,7 @@ const createTopping = async (
 
     const newTopping = await toppingRepository.save(newData);
 
-    return res
-      .status(200)
-      .json({ ok: true, topping: newTopping, token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, topping: newTopping });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -26,9 +24,7 @@ const readToppings = async (req: Request, res: Response): Promise<Response> => {
   try {
     const topping = await toppingRepository.find();
 
-    return res
-      .status(200)
-      .json({ ok: true, topping, token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, topping });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -45,9 +41,7 @@ const readToppingById = async (
 
     idValidation(topping, "restaurant");
 
-    return res
-      .status(200)
-      .json({ ok: true, topping, token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, topping });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }

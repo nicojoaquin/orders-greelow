@@ -7,13 +7,14 @@ import {
   updateCategoryById,
 } from "../controllers/Category.controller";
 import { revalidateToken } from "../middlewares/revalidateToken";
+import { rolesValidation } from "../middlewares/rolesValidation";
 
 const router = Router();
 
 router.use(revalidateToken);
 
 //Crea una categoria nuevo
-router.post("/create", createCategory);
+router.post("/create", rolesValidation, createCategory);
 
 //Obtiene todas los categorias
 router.get("/", readCategories);
@@ -22,9 +23,9 @@ router.get("/", readCategories);
 router.get("/one/:id", readCategoryById);
 
 //Actualiza una categoria por id
-router.put("/update/:id", updateCategoryById);
+router.put("/update/:id", rolesValidation, updateCategoryById);
 
 //Elimina una categoria por id
-router.delete("/delete/:id", deleteCategoryById);
+router.delete("/delete/:id", rolesValidation, deleteCategoryById);
 
 export default router;

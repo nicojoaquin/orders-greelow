@@ -11,9 +11,7 @@ const createMenu = async (req: Request, res: Response): Promise<Response> => {
 
     const newMenu = await menuRepository.save(newData);
 
-    return res
-      .status(200)
-      .json({ ok: true, menu: newMenu, token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, menu: newMenu });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -29,9 +27,7 @@ const readMenus = async (req: Request, res: Response): Promise<Response> => {
       },
     });
 
-    return res
-      .status(200)
-      .json({ ok: true, menus, token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, menus });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -54,9 +50,7 @@ const readMenuById = async (req: Request, res: Response): Promise<Response> => {
 
     idValidation(menu, "menu");
 
-    return res
-      .status(200)
-      .json({ ok: true, menu, token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, menu });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -74,30 +68,6 @@ const readMenusFilter = async (
     if (!restaurantId || categoryId)
       throw "No se envio ningun parametro de búsqueda";
 
-    if (!categoryId) {
-      menus = await menuRepository
-        .createQueryBuilder("menu")
-        .leftJoinAndSelect("menu.restaurant", "restaurant")
-        .leftJoinAndSelect("menu.category", "category")
-        .leftJoinAndSelect("menu.toppings", "toppings")
-        .where("restaurantId = :restaurantId", {
-          restaurantId: Number(restaurantId),
-        })
-        .getManyAndCount();
-    }
-
-    if (!restaurantId) {
-      menus = await menuRepository
-        .createQueryBuilder("menu")
-        .leftJoinAndSelect("menu.restaurant", "restaurant")
-        .leftJoinAndSelect("menu.category", "category")
-        .leftJoinAndSelect("menu.toppings", "toppings")
-        .where("categoryId = :categoryId", {
-          categoryId: Number(categoryId),
-        })
-        .getManyAndCount();
-    }
-
     if (restaurantId && categoryId) {
       menus = await menuRepository
         .createQueryBuilder("menu")
@@ -111,11 +81,29 @@ const readMenusFilter = async (
           categoryId: Number(categoryId),
         })
         .getManyAndCount();
+    } else if (!categoryId) {
+      menus = await menuRepository
+        .createQueryBuilder("menu")
+        .leftJoinAndSelect("menu.restaurant", "restaurant")
+        .leftJoinAndSelect("menu.category", "category")
+        .leftJoinAndSelect("menu.toppings", "toppings")
+        .where("restaurantId = :restaurantId", {
+          restaurantId: Number(restaurantId),
+        })
+        .getManyAndCount();
+    } else if (!restaurantId) {
+      menus = await menuRepository
+        .createQueryBuilder("menu")
+        .leftJoinAndSelect("menu.restaurant", "restaurant")
+        .leftJoinAndSelect("menu.category", "category")
+        .leftJoinAndSelect("menu.toppings", "toppings")
+        .where("categoryId = :categoryId", {
+          categoryId: Number(categoryId),
+        })
+        .getManyAndCount();
     }
 
-    return res
-      .status(200)
-      .json({ ok: true, menus: menus[0], token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, menus: menus[0] });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -138,7 +126,6 @@ const updateMenuById = async (
     return res.status(200).json({
       ok: true,
       menu: { ...newData, id },
-      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });
@@ -177,7 +164,7 @@ const deleteToppings = async (
       .of(menu.id)
       .remove(Number(toppingId));
 
-    return res.json({ ok: true, menu, token: res.locals.user.newToken });
+    return res.json({ ok: true, menu });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -216,9 +203,7 @@ const addToppings = async (req: Request, res: Response): Promise<Response> => {
       .of(menu.id)
       .add(Number(toppingId));
 
-    console.log(menu);
-
-    return res.json({ ok: true, menu, token: res.locals.user.newToken });
+    return res.json({ ok: true, menu });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -241,7 +226,6 @@ const deleteMenuById = async (
       ok: true,
       menu: { ...menu, id },
       msg: "menu eliminado",
-      token: res.locals.user.newToken,
     });
   } catch (error) {
     return res.json({ ok: false, msg: error });
