@@ -3,7 +3,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   JoinTable,
-  ManyToMany,
+  OneToMany,
 } from "typeorm";
 import { Item } from ".";
 
@@ -21,7 +21,6 @@ export class Order {
   @Column()
   total: number;
 
-  @ManyToMany(() => Item)
-  @JoinTable()
+  @OneToMany(() => Item, (item) => item.id)
   items: Item[];
 }

@@ -1,9 +1,9 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  OneToOne,
   JoinColumn,
   Column,
+  ManyToOne,
 } from "typeorm";
 import { Menu, User, Order } from "./";
 
@@ -12,13 +12,17 @@ export class Item {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User, (user) => user.id)
   @JoinColumn()
   user: User;
 
-  @OneToOne(() => Menu)
+  @ManyToOne(() => Menu, (menu) => menu.id)
   @JoinColumn()
   menu: Menu;
+
+  @ManyToOne(() => Order, (order) => order.id)
+  @JoinColumn()
+  order: Order;
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: string;

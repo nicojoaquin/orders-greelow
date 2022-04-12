@@ -5,14 +5,18 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Restaurant, Category, Topping } from "./";
+import { Restaurant, Category, Topping, Item } from "./";
 
 @Entity()
 export class Menu {
   @PrimaryGeneratedColumn()
   id: string;
+
+  @OneToMany(() => Item, (item) => item.id)
+  items: Item[];
 
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.id)
   @JoinColumn()

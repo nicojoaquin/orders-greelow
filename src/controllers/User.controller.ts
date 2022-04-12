@@ -3,7 +3,7 @@ import { User } from "../Entities";
 import { dbConfig } from "../config/db";
 import { cryptPassword, comparePasswords } from "../helpers/cryptPassword";
 import { signJwt } from "../helpers/signJwt";
-import { userVerify } from "../types";
+import { userVerify } from "../typescript/types";
 
 const userRepository = dbConfig.getRepository(User);
 

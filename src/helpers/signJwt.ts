@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { userVerify } from "../types";
+import { userVerify } from "../typescript/types";
 
 export const signJwt = async (user: userVerify) => {
   return new Promise((resolve, reject) => {
