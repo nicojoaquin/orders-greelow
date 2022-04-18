@@ -17,12 +17,14 @@ const createOrder = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-const readOrders = async () => {
-  const orders = await orderRepository.find({
-    relations: {
-      items: true,
-    },
-  });
+const readOrders = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const orders = await orderRepository.find();
+
+    return res.status(200).json({ ok: true, orders });
+  } catch (error) {
+    return res.json({ ok: false, msg: error });
+  }
 };
 
 const readOrderById = async () => {};

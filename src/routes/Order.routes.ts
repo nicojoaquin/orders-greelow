@@ -9,10 +9,8 @@ import {
 import { revalidateToken } from "../middlewares/revalidateToken";
 const router = Router();
 
-router.use(revalidateToken);
-
 //Crea un topping nuevo
-router.post("/create", createOrder);
+router.post("/create", revalidateToken, createOrder);
 
 //Obtiene todos los toppings
 router.get("/", readOrders);
@@ -21,9 +19,9 @@ router.get("/", readOrders);
 router.get("/one/:id", readOrderById);
 
 //Actualiza un topping por id
-router.put("/update/:id", updateOrderById);
+router.put("/update/:id", revalidateToken, updateOrderById);
 
 //Elimina un topping por id
-router.delete("/delete/:id", deleteOrderById);
+router.delete("/delete/:id", revalidateToken, deleteOrderById);
 
 export default router;

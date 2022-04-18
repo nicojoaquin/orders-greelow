@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { User } from "../Entities";
 import { dbConfig } from "../config/db";
 
-export const rolesValidation = async (
+const adminValidation = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -21,3 +21,5 @@ export const rolesValidation = async (
 
   next();
 };
+
+export { adminValidation };

@@ -7,14 +7,12 @@ import {
   updateRestaurantById,
 } from "../controllers/Restaurant.controller";
 import { revalidateToken } from "../middlewares/revalidateToken";
-import { rolesValidation } from "../middlewares/rolesValidation";
+import { adminValidation } from "../middlewares/rolesValidation";
 
 const router = Router();
 
-router.use(revalidateToken);
-
 //Crea un restaurant nuevo
-router.post("/create", rolesValidation, createRestaurant);
+router.post("/create", revalidateToken, adminValidation, createRestaurant);
 
 //Obtiene todos los restaurants
 router.get("/", readRestaurants);
@@ -23,9 +21,19 @@ router.get("/", readRestaurants);
 router.get("/one/:id", readRestaurantById);
 
 //Actualiza un restaurant por id
-router.put("/update/:id", rolesValidation, updateRestaurantById);
+router.put(
+  "/update/:id",
+  revalidateToken,
+  adminValidation,
+  updateRestaurantById
+);
 
 //Elimina un restaurant por id
-router.delete("/delete/:id", rolesValidation, deleteRestaurantById);
+router.delete(
+  "/delete/:id",
+  revalidateToken,
+  adminValidation,
+  deleteRestaurantById
+);
 
 export default router;

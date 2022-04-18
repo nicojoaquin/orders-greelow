@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  JoinTable,
-  OneToMany,
-} from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { Item } from ".";
 
 @Entity()
@@ -18,7 +12,7 @@ export class Order {
   @Column()
   comment: string;
 
-  @Column()
+  @Column({ default: 0 })
   total: number;
 
   @OneToMany(() => Item, (item) => item.id)

@@ -7,14 +7,14 @@ import {
   updateToppingById,
 } from "../controllers/Topping.controller";
 import { revalidateToken } from "../middlewares/revalidateToken";
-import { rolesValidation } from "../middlewares/rolesValidation";
+import { adminValidation } from "../middlewares/rolesValidation";
 
 const router = Router();
 
 router.use(revalidateToken);
 
 //Crea un topping nuevo
-router.post("/create", rolesValidation, createTopping);
+router.post("/create", adminValidation, createTopping);
 
 //Obtiene todos los toppings
 router.get("/", readToppings);
@@ -23,9 +23,9 @@ router.get("/", readToppings);
 router.get("/one/:id", readToppingById);
 
 //Actualiza un topping por id
-router.put("/update/:id", rolesValidation, updateToppingById);
+router.put("/update/:id", adminValidation, updateToppingById);
 
 //Elimina un topping por id
-router.delete("/delete/:id", rolesValidation, deleteToppingById);
+router.delete("/delete/:id", adminValidation, deleteToppingById);
 
 export default router;

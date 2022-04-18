@@ -21,12 +21,16 @@ const registerUser = async (req: Request, res: Response): Promise<Response> => {
 
     const newUser = await userRepository.save(newData);
 
+    const userVerified: userVerify = {
+      id: Number(newUser.id),
+      email: newUser.email,
+    };
+
+    const token = await signJwt(userVerified);
+
     return res
       .status(200)
-      .json({ ok: true, user: newUser, msg: "Usuario creado!" });
-
-    //TODO
-    //Hacer que registrarte te logee
+      .json({ ok: true, user: newUser, msg: "Usuario creado!", token });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }

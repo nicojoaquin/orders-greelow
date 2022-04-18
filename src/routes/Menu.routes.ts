@@ -10,14 +10,12 @@ import {
   deleteMenuById,
 } from "../controllers/Menu.controller";
 import { revalidateToken } from "../middlewares/revalidateToken";
-import { rolesValidation } from "../middlewares/rolesValidation";
+import { adminValidation } from "../middlewares/rolesValidation";
 
 const router = Router();
 
-router.use(revalidateToken);
-
 //Crea un nuevo menu
-router.post("/create", rolesValidation, createMenu);
+router.post("/create", revalidateToken, adminValidation, createMenu);
 
 //Obtiene los menues
 router.get("/", readMenus);
@@ -29,14 +27,24 @@ router.get("/one/:id", readMenuById);
 router.get("/filter", readMenusFilter);
 
 //Actualiza un menu por su id
-router.put("/update/:id", rolesValidation, updateMenuById);
+router.put("/update/:id", revalidateToken, adminValidation, updateMenuById);
 
 //Elimina un topping de un menu por el id del menu y el id del topping
-router.put("/update/:id/topping/delete/:toppingId", deleteToppings);
+router.put(
+  "/update/:id/topping/delete/:toppingId",
+  revalidateToken,
+  adminValidation,
+  deleteToppings
+);
 
-router.put("/update/:id/topping/add/:toppingId", addToppings);
+router.put(
+  "/update/:id/topping/add/:toppingId",
+  revalidateToken,
+  adminValidation,
+  addToppings
+);
 
 //Elimina un menu por su id
-router.delete("/delete/:id", rolesValidation, deleteMenuById);
+router.delete("/delete/:id", revalidateToken, adminValidation, deleteMenuById);
 
 export default router;
