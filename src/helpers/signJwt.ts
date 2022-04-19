@@ -16,7 +16,6 @@ export const signJwt = async (user: userVerify) => {
           console.warn(err);
           reject("No se pudo generar el token");
         }
-
         resolve(token);
       }
     );

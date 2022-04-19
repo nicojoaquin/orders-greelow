@@ -76,7 +76,16 @@ const readItemsByOrder = async (
 
 const readItemById = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const item = await itemRepository.findOneBy({ id: req.params.id });
+    const item = await itemRepository.findOne({
+      where: {
+        id: req.params.id,
+      },
+      relations: {
+        menu: true,
+        order: true,
+        user: true,
+      },
+    });
 
     idValidation(item, "item");
 
@@ -99,14 +108,24 @@ const deleteItemById = async (
       },
       relations: {
         user: true,
+        menu: true,
+        order: true,
       },
     });
 
-    userValidation(res.locals.user.id, item.user.id);
+    userValidation(item.user.id, res.locals.user.id);
 
     idValidation(item, "item");
 
+    const orderExist = await orderRepository.findOneBy({ id: item.order.id });
+
+    idValidation(orderExist, "pedido");
+
     await itemRepository.remove(item);
+
+    orderExist.total -= item.menu.price;
+
+    await orderRepository.save(orderExist);
 
     return res
       .status(200)

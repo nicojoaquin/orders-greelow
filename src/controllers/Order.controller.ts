@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Order } from "../Entities/";
+import { Order, Item } from "../Entities/";
 import { dbConfig } from "../config/db";
 import { idValidation } from "../helpers/idValidation";
 
@@ -27,11 +27,59 @@ const readOrders = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-const readOrderById = async () => {};
+const readOrderById = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const order = await orderRepository.findOneBy({ id: req.params.id });
 
-const updateOrderById = async () => {};
+    idValidation(order, "pedido");
 
-const deleteOrderById = async () => {};
+    return res.status(200).json({ ok: true, order });
+  } catch (error) {
+    return res.json({ ok: false, msg: error });
+  }
+};
+
+const updateOrderById = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { comment } = req.body;
+
+  try {
+    const order = await orderRepository.findOneBy({ id: req.params.id });
+
+    idValidation(order, "pedido");
+
+    order.comment = comment;
+
+    await orderRepository.save(order);
+
+    return res.status(200).json({ ok: true, order });
+  } catch (error) {
+    return res.json({ ok: false, msg: error });
+  }
+};
+
+const deleteOrderById = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { id } = req.params;
+  try {
+    const order = await orderRepository.findOneBy({ id });
+
+    idValidation(order, "pedido");
+
+    await orderRepository.remove(order);
+
+    return res.status(200).json({ ok: true, order, msg: "Orden eliminada!" });
+  } catch (error) {
+    return res.json({ ok: false, msg: error });
+  }
+};
 
 export {
   createOrder,

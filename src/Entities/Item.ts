@@ -20,7 +20,9 @@ export class Item {
   @JoinColumn()
   menu: Menu;
 
-  @ManyToOne(() => Order, (order) => order.id)
+  @ManyToOne(() => Order, (order) => order.id, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn()
   order: Order;
 
