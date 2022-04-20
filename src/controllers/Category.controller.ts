@@ -28,9 +28,7 @@ const readCategories = async (
   try {
     const categories = await categoryRepository.find();
 
-    return res
-      .status(200)
-      .json({ ok: true, categories, token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, categories });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
@@ -47,9 +45,7 @@ const readCategoryById = async (
 
     idValidation(category, "category");
 
-    return res
-      .status(200)
-      .json({ ok: true, category, token: res.locals.user.newToken });
+    return res.status(200).json({ ok: true, category });
   } catch (error) {
     return res.json({ ok: false, msg: error });
   }
