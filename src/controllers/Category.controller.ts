@@ -10,9 +10,7 @@ const createCategory = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const newData: Category = req.body;
-
-    const newCategory = await categoryRepository.save(newData);
+    const newCategory = await categoryRepository.save(req.body);
 
     return res.status(200).json({
       ok: true,
